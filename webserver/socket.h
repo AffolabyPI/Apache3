@@ -5,12 +5,11 @@ int create_server(int port);
 
 #endif
 
-struct sockaddr_in { 
-sa_family_t sin_family; /* address family: AF_INET */ 
-in_port_t sin_port; /* port in network byte order */ 
-struct in_addr sin_addr; /* internet address */ 
-};
-
-struct in_addr { 
-uint32_t s_addr; /* address in network byte order */ 
-}; 
+struct sockaddr_in saddr;
+saddr.sin_family = AF_INET ; /* Socket ipv4 */
+saddr.sin_port = htons(8080); /* Port d ’ écoute */
+saddr.sin_addr.s_addr = INADDR_ANY ; /* écoute sur toutes les interfaces */
+if(bind(socket_serveur, (struct sockaddr *)&saddr, sizeof(saddr)) == -1) {
+perror ("bind socker_serveur");
+/* traitement de l ’ erreur */
+}
