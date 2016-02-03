@@ -19,6 +19,11 @@ int create_server(int port) {
     return -1;
   }
 
+  int optval = 1;
+  if(setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(int)) == -1){
+     perror("Can not set SO_REUSEADDR option");
+  }
+
   struct sockaddr_in saddr;
   saddr.sin_family = AF_INET;
   saddr.sin_port = htons(port);
@@ -46,11 +51,6 @@ int create_server(int port) {
     }
     
     write(client_socket, welcome_message, strlen(welcome_message));
-  }
-
-  int optval = 1;
-  if(setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(int)) == -1){
-     perror("Can not set SO_REUSEADDR option");
   }
   
   return server_socket;
