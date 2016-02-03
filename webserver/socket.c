@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -8,6 +9,11 @@
 #include <netinet/ip.h>
 #include <unistd.h>
 #include <signal.h>
+=======
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netinet/ip.h>
+>>>>>>> refs/remotes/origin/master
 
 int create_server(int port) {
   int server_socket;
