@@ -1,12 +1,13 @@
-# include < stdio .h >
-# include < string .h >
-int main ( int argc , char ** argv )
-{
-/* Arnold Robbins in the LJ of February ’95 , describing RCS */
-if ( argc > 1 && strcmp ( argv [1] , " - advice " ) == 0) {
-printf ( " Don ’t Panic !\ n " );
-return 42;
-}
-printf ( " Need an advice ?\ n " );
-return 0;
+#include <stdio.h>
+#include <string.h>
+#include "socket.h"
+
+int main(void){
+  
+  if(create_server(8080) == -1){
+    perror("Impossible de créer le serveur");
+    return -1;
+  }
+  
+  return 0;
 }

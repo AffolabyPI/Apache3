@@ -1,0 +1,83 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <netinet/in.h>
+#include <netinet/ip.h>
+#include <unistd.h>
+#include <signal.h>
+
+void init_signals(void) {
+  if(signal(SIGPIPE, SIG_IGN) == SIG_ERR) {
+    perror("Erreur d'initialisation des signaux");
+  }
+}
+
+int creer_serveur(int port){
+  struct sockaddr_in saddr;
+  saddr.sin_family = AF_INET;
+  saddr.sin_port = htons(port);
+  saddr.sin_addr.s_addr = INADDR_ANY;
+  int socketServeur;
+  int socketClient;
+
+  if((socketServeur = socket(AF_INET, SOCK_STREAM, 0)) == -1){
+    perror("socketServeur");
+    return -1;
+  }
+
+  int optval = 1;
+  if(setsockopt(socketServeur, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(int)) == -1) {
+    perror("Can not set SO_REUSSEADDR option");
+    return -1;
+  }
+
+  initialiser_signaux();
+  
+  if(bind(socketServeur, (struct sockaddr *)&saddr, sizeof(saddr)) == -1){
+    perror("bind socketServeur");
+    return -1;
+  }
+
+  if(listen(socketServeur, 10) == -1){
+    perror("listen socketServeur");
+    return -1;
+  }
+
+  /*if((socketClient = accept(socketServeur, NULL, NULL)) == -1){
+    perror("accept");
+    }*/
+  const char *messageBienvenue = "Bonjour, je m'appelle C3PO, interprete du serveur web code en C et voici mes createurs Ali Douali et Paul Dumont.\nJe suis dispose a repondre a vos demandes jour et nuit.\nVous allez etre conduits dans les profondeurs du serveur web, le repere des tout puissants createurs.\nVous decouvrirez une nouvelle forme de douleur et de souffrance, en etant lentement codes pendant plus de... 1000 ans.\n";
+
+  char* buffer = (char*) malloc(sizeof(char)*1024);
+  
+  while(1){
+    if((socketClient = accept(socketServeur, NULL, NULL)) == -1){
+      perror("accept");
+      return -1;
+    }
+    if(write(socketClient, messageBienvenue, strlen(messageBienvenue)) == -1){
+      perror("write");
+      return -1;
+    }
+    
+    if(!fork()){
+      close(socketServeur);
+      while(1){
+	if(read(socketClient,buffer,sizeof(buffer)) == -1) {
+	  perror("read client");
+	  return -1;
+	}
+	write(socketClient, buffer, sizeof(buffer));
+      }
+      close(socketClient);
+      exit(0);
+    }
+  }
+  free(buffer);
+  close(socketServeur);
+  close(socketClient);
+  return socketServeur;
+}
