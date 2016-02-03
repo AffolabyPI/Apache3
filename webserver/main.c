@@ -11,8 +11,7 @@ int main(void){
   }
 
   while (1) {
-    int client_socket = accept_client(server_socket);
-    close_client(client_socket);
+    accept_client(server_socket);
   }
   
   return 0;
