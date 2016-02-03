@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -9,11 +8,6 @@
 #include <netinet/ip.h>
 #include <unistd.h>
 #include <signal.h>
-=======
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <netinet/ip.h>
->>>>>>> refs/remotes/origin/master
 
 int create_server(int port) {
   int server_socket;
@@ -38,15 +32,18 @@ int create_server(int port) {
     perror("lister server_socket");
   }
 
-  int client_socket;
-  client_socket = accept(server_socket, NULL, NULL);
-
-  if(client_socket == -1) {
-    perror("accept");
-  }
-
   const char *welcome_message = "Welcome on Apache 3 !!! Le serveur du futur ! Il a été entierement realiser suite a des etudes francaise que j'ai realise moi-meme car je sui francais, prenant en compte l'influence d'apache dans le monde des devellopeurs de l'IUT de Lille A au seins de la promo Promo N4P2. Ce serveur est concus par les meilleurs etudiants de la promotion, a savoir : Paul-Ivan Affolaby, expert monetaire doue d'un esprit de chef d'equipe, Kevin Messien, technicien de pointe capable de realiser des chmod incongru (notemment pour se retirer ses propres droits de facon recursif), son genie reste inegale, et enfin Florian Mardon, futur ingenieur expert en lardon et en pate-raclette";
-  write(client_socket, welcome_message, strlen(welcome_message));
+
+  while (1) {
+    int client_socket;
+    client_socket = accept(server_socket, NULL, NULL);
+
+    if(client_socket == -1) {
+      perror("accept");
+    }
+    
+    write(client_socket, welcome_message, strlen(welcome_message));
+  }
   
   return server_socket;
 }
