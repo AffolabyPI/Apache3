@@ -1,1 +1,45 @@
-Lel
+Seance 0 - 27/01/2016
+
+*********************
+
+Début du projet, explication du fonctionnement détaillé d'un git, mise en place du git.
+
+Details du GIT:
+*Ajouts
+
+Apache3
+	  \-*AUTHORS.txt
+	   -*LICENSE.txt
+	   -*README.txt
+	   -*Makefile
+
+*********************
+
+Seance 1 -03/02/2016
+
+*********************
+
+Ajout des protocoles d'échange avec le serveur par TCP et début d'amélioration des sockets
+
+Details du GIT
+*Ajouts
++Modification
+
+Apache3
+	  \*webserveur
+	  |		   \-*apch3.exe
+	  |		    -*main
+	  |		    -*main.o
+	  |		    -*Makefile
+	  |		    -*makefile.dep
+	  |		    -*socket.c
+	  |		    -*socket.h
+	  |		    -*socket.o
+	  |		    -*utilitaire
+	   -AUTHORS.txt
+	   -LICENSE.txt
+	   +-README.txt
+	   -Makefile
+
+
+*********************
