@@ -45,6 +45,11 @@ int create_server(int port) {
     perror("accept");
   }
 
+  int optval = 1;
+  if(setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(int)) == -1){
+     perror("Can not set SO_REUSEADDR option");
+  }
+
   const char *welcome_message = "Welcome on Apache 3 !!! Le serveur du futur ! Il a été entierement realiser suite a des etudes francaise que j'ai realise moi-meme car je sui francais, prenant en compte l'influence d'apache dans le monde des devellopeurs de l'IUT de Lille A au seins de la promo Promo N4P2. Ce serveur est concus par les meilleurs etudiants de la promotion, a savoir : Paul-Ivan Affolaby, expert monetaire doue d'un esprit de chef d'equipe, Kevin Messien, technicien de pointe capable de realiser des chmod incongru (notemment pour se retirer ses propres droits de facon recursif), son genie reste inegale, et enfin Florian Mardon, futur ingenieur expert en lardon et en pate-raclette";
   write(client_socket, welcome_message, strlen(welcome_message));
   
