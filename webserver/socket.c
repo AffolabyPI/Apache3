@@ -24,6 +24,10 @@ int create_server(int port) {
      perror("Can not set SO_REUSEADDR option");
   }
 
+  if ( signal ( SIGPIPE , SIG_IGN ) == SIG_ERR ) {
+    perror ( " signal " );
+  }
+
   struct sockaddr_in saddr;
   saddr.sin_family = AF_INET;
   saddr.sin_port = htons(port);
@@ -51,10 +55,6 @@ int create_server(int port) {
     }
     
     write(client_socket, welcome_message, strlen(welcome_message));
-  }
-  
-  if ( signal ( SIGPIPE , SIG_IGN ) == SIG_ERR ) {
-    perror ( " signal " );
   }
 
   return server_socket;
