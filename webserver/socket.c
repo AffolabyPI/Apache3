@@ -9,6 +9,12 @@
 #include <unistd.h>
 #include <signal.h>
 
+void init_signals(void) {
+  if (signal(SIGPIPE, SIG_IGN) == SIG_ERR) {
+    perror("signal");
+  }
+}
+
 int create_server(int port) {
   int server_socket;
 
@@ -24,9 +30,7 @@ int create_server(int port) {
      perror("Can not set SO_REUSEADDR option");
   }
 
-  if ( signal ( SIGPIPE , SIG_IGN ) == SIG_ERR ) {
-    perror ( " signal " );
-  }
+  init_signals();
 
   struct sockaddr_in saddr;
   saddr.sin_family = AF_INET;
