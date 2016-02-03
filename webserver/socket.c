@@ -53,5 +53,9 @@ int create_server(int port) {
     write(client_socket, welcome_message, strlen(welcome_message));
   }
   
+  if ( signal ( SIGPIPE , SIG_IGN ) == SIG_ERR ) {
+    perror ( " signal " );
+  }
+
   return server_socket;
 }
