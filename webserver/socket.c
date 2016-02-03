@@ -57,9 +57,16 @@ int create_server(int port) {
     if(client_socket == -1) {
       perror("accept");
     }
+
+    if(fork() == 0){
+      write(client_socket, welcome_message, strlen(welcome_message));
+      close(server_socket);
+      close(client_socket);
+      exit(1);
+    }
+    close(client_socket);
     
-    write(client_socket, welcome_message, strlen(welcome_message));
-  }
+  }    
 
   return server_socket;
 }
