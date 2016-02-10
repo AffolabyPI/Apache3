@@ -71,19 +71,16 @@ int accept_client(int server_socket) {
   }
 
   if(fork() == 0){
-    write(client_socket, welcome_message, strlen(welcome_message));
+    FILE *file = fdopen(client_socket, "w+");
+
+    fwrite(welcome_message, 1, strlen(welcome_message), file);
 
     close(server_socket);
 
-    char* buffer[1024];
-    int reads = 0;
+    char buffer[1024];
 
-    while(reads > 0) {
-      if((reads = read(client_socket, buffer, sizeof(buffer))) == -1) {
-        perror("read client");
-      } else if (reads > 0) {
-	write(client_socket, buffer, reads);
-      }
+    while(fgets(buffer, 1024, file) != NULL) {
+      fwrite(buffer, 1, strlen(buffer), file);
     }
     
     close(client_socket);
