@@ -16,6 +16,9 @@ const char *apache3 = "<Apache3>";
 void deal_signal(int sig){
   printf("Signal %d recu\n", sig);
   wait(&sig);
+  if(WIFSIGNALED(sig)) {
+    printf("tue par signal %d\n", WTERMSIG(sig));
+  }
 }
 
 void init_signals(void) {
@@ -62,6 +65,40 @@ int create_server(int port) {
   return server_socket;
 }
 
+int check_client_header(FILE *file) {
+    char buffer[1024];
+
+    if (fgets(buffer, 1024, file) != NULL) {
+      char *c = buffer;
+      char *words[2];
+
+      if (c[0] != 'G' || c[1] != 'E' || c[2] != 'T') {
+	return -1;
+      }
+
+      int word = 0;
+
+      while(c[0] != '\0') {
+	if(c[0] == ' ') {
+	  if (word == 2) {
+	    return -1;
+	  }
+	  words[word] = c;
+	  word ++;
+	}
+	c++;
+      }
+      
+      if (strcmp(" HTTP/1.0\r\n", words[1]) != 0 && strcmp(" HTTP/1.1\r\n", words[1]) != 0) {
+	return -1;
+      }
+    } else {
+      return -1;
+    }
+
+    return 1;
+}
+
 int accept_client(int server_socket) {
   int client_socket;
   client_socket = accept(server_socket, NULL, NULL);
@@ -74,18 +111,25 @@ int accept_client(int server_socket) {
   if(fork() == 0){
     FILE *file = fdopen(client_socket, "w+");
 
-    fprintf(file, "%s %s", apache3, welcome_message);
-
-    close(server_socket);
+    if (check_client_header(file) == -1) {
+      printf("mauvaise entete\n");
+     }
 
     char buffer[1024];
 
-    while(fgets(buffer, 1024, file) != NULL) {
-      fprintf(file, "%s %s", apache3, buffer);
+    int fin = 0;
+
+    while (fin == 0 && fgets(buffer, 1024, file) != NULL) {
+      if (strcmp(buffer, "\r\n") == 0) {
+	fin = 1;
+      }
     }
-    
+
+    fprintf(file, "%s %s", apache3, welcome_message);
+
+    fflush(file);   
     close(client_socket);
-   
+    close(server_socket);
     exit(1);
   }
   close(client_socket);
