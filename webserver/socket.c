@@ -11,6 +11,7 @@
 #include <errno.h>
 
 const char *welcome_message = "Welcome on Apache 3 !!! Le serveur du futur !\n Il a ete entierement realiser suite a des \netudes francaise que j'ai realise moi-meme car je sui \nfrancais, prenant en compte l'influence d'apache dans le \nmonde des devellopeurs de l'IUT de Lille A au seins de la \npromo Promo N4P2. Ce serveur est concus par les meilleurs \netudiants de la promotion, a savoir : Paul-Ivan Affolaby, \nexpert monetaire doue d'un esprit de chef d'equipe, Kevin \nMessien, technicien de pointe capable de realiser des chmod \nincongru (notemment pour se retirer ses propres droits de \nfacon recursif), son genie reste inegale, et enfin Florian \nMardon, futur ingenieur expert en lardon et en pate-raclette";
+const char *apache3 = "<Apache3>";
 
 void deal_signal(int sig){
   printf("Signal %d recu\n", sig);
@@ -73,14 +74,14 @@ int accept_client(int server_socket) {
   if(fork() == 0){
     FILE *file = fdopen(client_socket, "w+");
 
-    fwrite("<Apache3> "+welcome_message, 1, strlen(welcome_message), file);
+    fprintf(file, "%s %s", apache3, welcome_message);
 
     close(server_socket);
 
     char buffer[1024];
 
     while(fgets(buffer, 1024, file) != NULL) {
-      fwrite(buffer, 1, strlen(buffer), file);
+      fprintf(file, "%s %s", apache3, buffer);
     }
     
     close(client_socket);
