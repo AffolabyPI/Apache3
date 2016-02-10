@@ -73,7 +73,7 @@ int accept_client(int server_socket) {
   if(fork() == 0){
     FILE *file = fdopen(client_socket, "w+");
 
-    fwrite(welcome_message, 1, strlen(welcome_message), file);
+    fwrite("<Apache3> "+welcome_message, 1, strlen(welcome_message), file);
 
     close(server_socket);
 
