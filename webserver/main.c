@@ -12,6 +12,7 @@ int main(void){
 
   while (1) {
     accept_client(server_socket);
+    char[] string = fgets();
   }
   
   return 0;
