@@ -64,31 +64,30 @@ int create_server(int port) {
 int accept_client(int server_socket) {
   int client_socket;
   client_socket = accept(server_socket, NULL, NULL);
-
-
+  
   if(client_socket == -1) {
-    if (errno != EINTR) {
-      perror("accept");
-    }
+    perror("accept");
     return -1;
   }
 
   if(fork() == 0){
     write(client_socket, welcome_message, strlen(welcome_message));
-    
+
+    close(server_socket);
+
     char* buffer[1024];
-    int readed = 0;
-    
-    while(1) {
-      if((readed = read(client_socket, buffer, sizeof(buffer))) == -1) {
+    int reads = 0;
+
+    while(reads > 0) {
+      if((reads = read(client_socket, buffer, sizeof(buffer))) == -1) {
         perror("read client");
-	return -1;
+      } else if (reads > 0) {
+	write(client_socket, buffer, reads);
       }
-      write(client_socket, buffer, readed);
     }
     
-    close(server_socket);
     close(client_socket);
+   
     exit(1);
   }
   close(client_socket);
