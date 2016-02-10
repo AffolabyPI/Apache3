@@ -12,6 +12,9 @@
 
 const char *welcome_message = "Welcome on Apache 3 !!! Le serveur du futur !\n Il a ete entierement realiser suite a des \netudes francaise que j'ai realise moi-meme car je sui \nfrancais, prenant en compte l'influence d'apache dans le \nmonde des devellopeurs de l'IUT de Lille A au seins de la \npromo Promo N4P2. Ce serveur est concus par les meilleurs \netudiants de la promotion, a savoir : Paul-Ivan Affolaby, \nexpert monetaire doue d'un esprit de chef d'equipe, Kevin \nMessien, technicien de pointe capable de realiser des chmod \nincongru (notemment pour se retirer ses propres droits de \nfacon recursif), son genie reste inegale, et enfin Florian \nMardon, futur ingenieur expert en lardon et en pate-raclette";
 const char *apache3 = "<Apache3>";
+const char *error_400 = "HTTP/1.1 400 Bad Request\r\nConnection: close\r\nContent-Length: 17\r\n\r\n400 Bad request";
+const char *message_200 = "HTTP/1.1 200 Ok\r\n";
+const char *message_size = "Content-Length: ";
 
 void deal_signal(int sig){
   printf("Signal %d recu\n", sig);
@@ -111,9 +114,9 @@ int accept_client(int server_socket) {
   if(fork() == 0){
     FILE *file = fdopen(client_socket, "w+");
 
-    if (check_client_header(file) == -1) {
-      printf("mauvaise entete\n");
-     }
+    int headerError = 0; 
+    
+    headerError = check_client_header(file);
 
     char buffer[1024];
 
@@ -125,7 +128,11 @@ int accept_client(int server_socket) {
       }
     }
 
-    fprintf(file, "%s %s", apache3, welcome_message);
+    if (headerError < 0) {
+      fprintf(file, "%s", error_400);
+    } else {
+      fprintf(file, "%s%s%d\r\n\r\n%s %s", message_200, message_size, (int) (strlen(apache3) + strlen(welcome_message) + 3), apache3, welcome_message);
+    }
 
     fflush(file);   
     close(client_socket);
