@@ -151,6 +151,38 @@ int accept_client(int server_socket) {
   return 0;
 }
 
+int parse_http_request(const char *request_line, http_request *request){
+  int ok;
+  token = strtok(request_line, " ");
+  while(token){
+      ++tkCounter;
+      if(tkCounter==1 && strcmp(token,"GET")!=0){
+        ok = 0;
+      }
+      if(tkCounter==2 && strcmp(token, "/")!=0){
+        ok=1;
+      }       
+      if(tkCounter > 3){
+        ok = 0;
+      }
+      if(tkCounter == 3 && strcmp(token,"HTTP/1.0\r\n")!=0 && strcmp(token,"HTTP/1.1\r\n")!=0){
+        ok = 0;
+      }
+      token=strtok(NULL," ");
+  } 
+  if(tkCounter < 3 ){
+    ok = 0;
+  }
+  tkCounter=0;
+  while(ok==1 && ligneVide==0){
+    str = fgets_or_exit(buffer, 80, file);
+    if(str!= NULL && (strcmp(str, "\r\n")==0 || strcmp(str, "\n")==0)){
+      ligneVide=1;
+    }
+  }
+  return ok;
+}
+
 void close_client(int client_socket) {
   close(client_socket);
 }
