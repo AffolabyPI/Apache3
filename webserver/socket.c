@@ -21,7 +21,7 @@ void deal_signal(int sig){
   printf("Signal %d recu\n", sig);
   wait(&sig);
   if(WIFSIGNALED(sig)) {
-    printf("tue par signal %d\n", WTERMSIG(sig));
+    printf("Tue par signal %d\n", WTERMSIG(sig));
   }
 }
 
@@ -48,63 +48,69 @@ int create_server(int port) {
 
   int optval = 1;
   if(setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(int)) == -1){
-     perror("Can not set SO_REUSEADDR option");
+   perror("Can not set SO_REUSEADDR option");
+ }
+
+ init_signals();
+
+ struct sockaddr_in saddr;
+ saddr.sin_family = AF_INET;
+ saddr.sin_port = htons(port);
+ saddr.sin_addr.s_addr = INADDR_ANY;
+
+ if (bind(server_socket, (struct sockaddr *) &saddr, sizeof(saddr)) == -1) {
+  perror("bind server_socket");
+}
+
+if (listen(server_socket, 10) == -1) {
+  perror("lister server_socket");
+}
+
+return server_socket;
+}
+
+void fgets_or_exit(char *buffer, int size, FILE *stream){
+  if(fgets(buffer, size, stream) == NULL){
+    perror("Cannot read");
+    exit(1);
   }
-
-  init_signals();
-
-  struct sockaddr_in saddr;
-  saddr.sin_family = AF_INET;
-  saddr.sin_port = htons(port);
-  saddr.sin_addr.s_addr = INADDR_ANY;
-
-  if (bind(server_socket, (struct sockaddr *) &saddr, sizeof(saddr)) == -1) {
-    perror("bind server_socket");
-  }
-
-  if (listen(server_socket, 10) == -1) {
-    perror("lister server_socket");
-  }
-
-  return server_socket;
+  printf("%s", buffer);
 }
 
 int check_client_header(FILE *file) {
-    char buffer[1024];
+  char buffer[1024];
 
-    if (fgets(buffer, 1024, file) != NULL) {
-      char *c = buffer;
-      char *words[2];
- 
-      if (strlen(c) < 3 && (c[0] != 'G' || c[1] != 'E' || c[2] != 'T')) {
-	return 400;
-      }
+  fgets_or_exit(buffer, 1024, file);
 
-      int word = 0;
+  char *c = buffer;
+  char *words[2];
 
-      while(c[0] != '\0') {
-      	if(c[0] == ' ') {
-      	  if (word == 2) {
-      	    return 400;
-      	  }
-      	  words[word] = c;
-      	  word ++;
-      	}
-      	c++;
-      }
-      
-      if (strcmp(" HTTP/1.0\r\n", words[1]) != 0 && strcmp(" HTTP/1.1\r\n", words[1]) != 0) {
-	     return 400;
-      }
+  if (strlen(c) < 3 && (c[0] != 'G' || c[1] != 'E' || c[2] != 'T')) {
+    return 400;
+  }
 
-      if (words[0][1] != '/' || words[0][2] != ' ') {
-	return 404;
-      }
-    } else {
-      return 400;
-    }
+  int word = 0;
 
-    return 200;
+  while(c[0] != '\0') {
+   if(c[0] == ' ') {
+     if (word == 2) {
+       return 400;
+     }
+     words[word] = c;
+     word ++;
+   }
+   c++;
+ }
+
+ if (strcmp(" HTTP/1.0\r\n", words[1]) != 0 && strcmp(" HTTP/1.1\r\n", words[1]) != 0) {
+  return 400;
+}
+
+if (words[0][1] != '/' || words[0][2] != ' ') {
+ return 404;
+}
+
+return 200;
 }
 
 int accept_client(int server_socket) {
@@ -119,7 +125,7 @@ int accept_client(int server_socket) {
   if(fork() == 0){
     FILE *file = fdopen(client_socket, "w+");
 
-    int headerError = 0; 
+    int headerError = 0;
     headerError = check_client_header(file);
 
 
@@ -127,9 +133,10 @@ int accept_client(int server_socket) {
 
     int fin = 0;
 
-    while (fin == 0 && fgets(buffer, 1024, file) != NULL) {
+    while (fin == 0) {
+      fgets_or_exit(buffer, 1024, file);
       if (strcmp(buffer, "\r\n") == 0 || strcmp(buffer, "\n") == 0) {
-	     fin = 1;
+        fin = 1;
       }
     }
 
