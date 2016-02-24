@@ -13,6 +13,7 @@
 const char *welcome_message = "Welcome on Apache 3 !!! Le serveur du futur !\n Il a ete entierement realiser suite a des \netudes francaise que j'ai realise moi-meme car je sui \nfrancais, prenant en compte l'influence d'apache dans le \nmonde des devellopeurs de l'IUT de Lille A au seins de la \npromo Promo N4P2. Ce serveur est concus par les meilleurs \netudiants de la promotion, a savoir : Paul-Ivan Affolaby, \nexpert monetaire doue d'un esprit de chef d'equipe, Kevin \nMessien, technicien de pointe capable de realiser des chmod \nincongru (notemment pour se retirer ses propres droits de \nfacon recursif), son genie reste inegale, et enfin Florian \nMardon, futur ingenieur expert en lardon et en pate-raclette";
 const char *apache3 = "<Apache3>";
 const char *error_400 = "HTTP/1.1 400 Bad Request\r\nConnection: close\r\nContent-Length: 17\r\n\r\n400 Bad request";
+const char *error_404 = "HTTP/1.1 404 Not Found\r\nConnection: close\r\nContent-Length: 13\r\n\r\n404 Not Found";
 const char *message_200 = "HTTP/1.1 200 Ok\r\n";
 const char *message_size = "Content-Length: ";
 
@@ -74,9 +75,9 @@ int check_client_header(FILE *file) {
     if (fgets(buffer, 1024, file) != NULL) {
       char *c = buffer;
       char *words[2];
-
+ 
       if (strlen(c) < 3 && (c[0] != 'G' || c[1] != 'E' || c[2] != 'T')) {
-	return -1;
+	return 400;
       }
 
       int word = 0;
@@ -84,7 +85,7 @@ int check_client_header(FILE *file) {
       while(c[0] != '\0') {
       	if(c[0] == ' ') {
       	  if (word == 2) {
-      	    return -1;
+      	    return 400;
       	  }
       	  words[word] = c;
       	  word ++;
@@ -93,13 +94,17 @@ int check_client_header(FILE *file) {
       }
       
       if (strcmp(" HTTP/1.0\r\n", words[1]) != 0 && strcmp(" HTTP/1.1\r\n", words[1]) != 0) {
-	     return -1;
+	     return 400;
+      }
+
+      if (words[0][1] != '/' || words[0][2] != ' ') {
+	return 404;
       }
     } else {
-      return -1;
+      return 400;
     }
 
-    return 1;
+    return 200;
 }
 
 int accept_client(int server_socket) {
@@ -128,9 +133,11 @@ int accept_client(int server_socket) {
       }
     }
 
-    if (headerError < 0) {
+    if (headerError == 400) {
       fprintf(file, "%s", error_400);
-    } else {
+    } else if (headerError == 404) {
+      fprintf(file, "%s", error_404);
+    } else if (headerError == 200) {
       fprintf(file, "%s%s%d\r\n\r\n%s %s", message_200, message_size, (int) (strlen(apache3) + strlen(welcome_message) + 3), apache3, welcome_message);
     }
 
