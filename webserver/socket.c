@@ -75,25 +75,25 @@ int check_client_header(FILE *file) {
       char *c = buffer;
       char *words[2];
 
-      if (c[0] != 'G' || c[1] != 'E' || c[2] != 'T') {
+      if (strlen(c) < 3 && (c[0] != 'G' || c[1] != 'E' || c[2] != 'T')) {
 	return -1;
       }
 
       int word = 0;
 
       while(c[0] != '\0') {
-	if(c[0] == ' ') {
-	  if (word == 2) {
-	    return -1;
-	  }
-	  words[word] = c;
-	  word ++;
-	}
-	c++;
+      	if(c[0] == ' ') {
+      	  if (word == 2) {
+      	    return -1;
+      	  }
+      	  words[word] = c;
+      	  word ++;
+      	}
+      	c++;
       }
       
       if (strcmp(" HTTP/1.0\r\n", words[1]) != 0 && strcmp(" HTTP/1.1\r\n", words[1]) != 0) {
-	return -1;
+	     return -1;
       }
     } else {
       return -1;
@@ -115,16 +115,16 @@ int accept_client(int server_socket) {
     FILE *file = fdopen(client_socket, "w+");
 
     int headerError = 0; 
-    
     headerError = check_client_header(file);
+
 
     char buffer[1024];
 
     int fin = 0;
 
     while (fin == 0 && fgets(buffer, 1024, file) != NULL) {
-      if (strcmp(buffer, "\r\n") == 0) {
-	fin = 1;
+      if (strcmp(buffer, "\r\n") == 0 || strcmp(buffer, "\n") == 0) {
+	     fin = 1;
       }
     }
 
