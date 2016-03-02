@@ -57,10 +57,10 @@ Details du GIT
 Apache3
 	  \webserveur
 	  |		  \-apche3.exe
-	  |	       -main.c
+	  |	       	   -main.c
 	  |		   -main.o
 	  |		   -Makefile
-	  |   	   -makefile.dep
+	  |   	   	   -makefile.dep
 	  |		   +-socket.c
 	  |		   -socket.h
 	  |		   -socket.o
@@ -81,10 +81,10 @@ Implementation de quelques messages de rediriction et lecture des lignes envoyés
 Apache3
 	  \webserveur
 	  |		  \-apche3.exe
-	  |	       -main.c
+	  |	       	   -main.c
 	  |		   -main.o
 	  |		   -Makefile
-	  |   	   -makefile.dep
+	  |   	   	   -makefile.dep
 	  |		   +-socket.c
 	  |		   -socket.h
 	  |		   -socket.o
@@ -93,3 +93,29 @@ Apache3
 	  -LICENSE.txt
 	  +-README.txt
 	  -Makefile
+
+*********************
+
+Seance 4 - 02/03/2016
+
+*********************
+
+Travail sur le parse_HTTP_request.
+
+Apache3
+	  \webserveur
+	  |		  \-apche3.exe
+	  |	       	   -main.c
+	  |		   -main.o
+	  |		   -Makefile
+	  |   	   	   -makefile.dep
+	  |		   +-socket.c
+	  |		   -socket.h
+	  |		   -socket.o
+	  |		   -utilitaire
+	  -AUTHORS.txt
+	  -LICENSE.txt
+	  +-README.txt
+	  -Makefile
+
+*********************
