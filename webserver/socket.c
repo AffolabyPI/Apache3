@@ -17,7 +17,8 @@ const char *error_400 = "HTTP/1.1 400 Bad Request\r\nConnection: close\r\nConten
 const char *error_404 = "HTTP/1.1 404 Not Found\r\nConnection: close\r\nContent-Length: 15\r\n\r\n404 Not Found\r\n";
 const char *message_200 = "HTTP/1.1 200 Ok\r\n";
 const char *message_size = "Content-Length: ";
-
+const char *http_version = "HTTP-1.1";
+const char *content_length = "Content-Length:";
 void deal_signal(int sig){
   printf("Signal %d recu\n", sig);
   wait(&sig);
@@ -117,6 +118,13 @@ void skip_headers(FILE *file){
   }
 }
 
+void send_status (FILE *client, int code, const char *reason_phrase){
+   char buf[128];
+
+  sprintf(buf, "%d %s\r\n", code, reason_phrase);
+  fprintf(client, "%s %d %s\r\nConnection: close\r\n%s %d\r\n\r\n%s", http_version, code, reason_phrase, content_length, (int) (strlen(buf) + 1), buf);
+}
+
 int check_client_header(FILE *file) {
   char buffer[1024];
   http_request request;
@@ -126,16 +134,20 @@ int check_client_header(FILE *file) {
   if (parse_http_request(buffer, &request) == 1) {
     if (request.method != HTTP_GET) {
       skip_headers(file);
+      send_status(file, 400, "Bad request");
       return 400;
     } else if (strcmp(request.url, "/")) {
       skip_headers(file);
+      send_status(file, 404, "Not Found");
       return 404;
     } else {
       skip_headers(file);
+      //send_status(file, 200, "Ok");
       return 200;
     }
   } else {
     skip_headers(file);
+    send_status(file, 400, "Bad Request");
     return 400;
   }
 }
@@ -155,12 +167,8 @@ int accept_client(int server_socket) {
     int headerError = 0;
     headerError = check_client_header(file);
 
-    if (headerError == 400) {
-      fprintf(file, "%s", error_400);
-    } else if (headerError == 404) {
-      fprintf(file, "%s", error_404);
-    } else if (headerError == 200) {
-      fprintf(file, "%s%s%d\r\n\r\n%s %s", message_200, message_size, (int) (strlen(apache3) + strlen(welcome_message) + 3), apache3, welcome_message);
+    if (headerError == 200) {
+      fprintf(file, "%s%s%d\r\n\r\n%s %s", message_200, message_size, (int) (strlen(apache3) + strlen(welcome_message) + 1), apache3, welcome_message);
     }
 
     fflush(file);   
