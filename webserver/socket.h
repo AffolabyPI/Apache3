@@ -5,4 +5,15 @@ int create_server(int port);
 int accept_client(int server_socket);
 void close_client(int client_socket);
 
+enum http_method {
+	HTTP_GET ,
+	HTTP_UNSUPPORTED ,
+};
+typedef struct {
+	enum http_method method ;
+	int major_version ;
+	int minor_version ;
+	char * url ;
+} http_request ;
+
 #endif

@@ -146,7 +146,7 @@ int accept_client(int server_socket) {
       fprintf(file, "%s", error_404);
     } else if (headerError == 200) {
       fprintf(file, "%s%s%d\r\n\r\n%s %s", message_200, message_size, (int) (strlen(apache3) + strlen(welcome_message) + 3), apache3, welcome_message);
-    }
+    } 
 
     fflush(file);   
     close(client_socket);
@@ -167,7 +167,7 @@ int parse_http_request(const char *request_line, http_request *request){
         ok = 0;
       }
       if(tkCounter==2 && strcmp(token, "/")!=0){
-        ok=1;
+        ok = 1;
       }       
       if(tkCounter > 3){
         ok = 0;
