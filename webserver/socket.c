@@ -125,6 +125,15 @@ void send_status (FILE *client, int code, const char *reason_phrase){
   fprintf(client, "%s %d %s\r\nConnection: close\r\n%s %d\r\n\r\n%s", http_version, code, reason_phrase, content_length, (int) (strlen(buf) + 1), buf);
 }
 
+void send_response(FILE *client, int code, const char *reason_phrase, const char *message_body){
+  if(code == 400)
+    send_status(client, 400, reason_phrase);
+  else if(code == 404)
+    send_status(client, 404, reason_phrase);
+  else
+    send_status(client, 400, reason_phrase);
+}
+
 int check_client_header(FILE *file) {
   char buffer[1024];
   http_request request;
@@ -134,11 +143,13 @@ int check_client_header(FILE *file) {
   if (parse_http_request(buffer, &request) == 1) {
     if (request.method != HTTP_GET) {
       skip_headers(file);
-      send_status(file, 400, "Bad request");
+      send_response(file, 400, "Bad request", "Bad request\r\n");
+      //send_status(file, 400, "Bad request");
       return 400;
     } else if (strcmp(request.url, "/")) {
       skip_headers(file);
-      send_status(file, 404, "Not Found");
+      send_response(file, 404, "Not Found", "Not Found\r\n");
+      //send_status(file, 404, "Not Found");
       return 404;
     } else {
       skip_headers(file);
@@ -147,7 +158,8 @@ int check_client_header(FILE *file) {
     }
   } else {
     skip_headers(file);
-    send_status(file, 400, "Bad Request");
+    send_response(file, 400, "Bad Request", "Bad request\r\n")
+    //send_status(file, 400, "Bad Request");
     return 400;
   }
 }
