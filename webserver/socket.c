@@ -89,21 +89,32 @@ int parse_http_request(char *request_line, http_request *request){
       request->url = token;
     } else if (line == 2) {
       if (strcmp(" HTTP/1.0\r\n", token) == 0) {
-	request->major_version = 1;
-	request->minor_version = 0;
-      } else if (strcmp(" HTTP/1.1\r\n", token) != 0) {
-	request->major_version = 1;
-	request->minor_version = 1;
-      } else {
-	return 0;
-      }
-    } else {
-      return 0;
-    }
-    line++;
-    token = strtok(NULL, " ");
+       request->major_version = 1;
+       request->minor_version = 0;
+     } else if (strcmp(" HTTP/1.1\r\n", token) != 0) {
+       request->major_version = 1;
+       request->minor_version = 1;
+     } else {
+       return 0;
+     }
+   } else {
+    return 0;
   }
-  return line == 3;
+  line++;
+  token = strtok(NULL, " ");
+}
+return line == 3;
+}
+
+void skip_headers(FILE *file){
+  char buffer[1024];           
+
+  while (1) {
+    fgets_or_exit(buffer, 1024, file);
+    if (strcmp(buffer, "\r\n") == 0 || strcmp(buffer, "\n") == 0) {
+      return;
+    }
+  }
 }
 
 int check_client_header(FILE *file) {
@@ -114,13 +125,17 @@ int check_client_header(FILE *file) {
 
   if (parse_http_request(buffer, &request) == 1) {
     if (request.method != HTTP_GET) {
+      skip_headers(file);
       return 400;
     } else if (strcmp(request.url, "/")) {
+      skip_headers(file);
       return 404;
     } else {
+      skip_headers(file);
       return 200;
     }
   } else {
+    skip_headers(file);
     return 400;
   }
 }
@@ -139,16 +154,6 @@ int accept_client(int server_socket) {
 
     int headerError = 0;
     headerError = check_client_header(file);
-
-    char buffer[1024];		       
-    int fin = 0;
-
-    while (fin == 0) {
-      fgets_or_exit(buffer, 1024, file);
-      if (strcmp(buffer, "\r\n") == 0 || strcmp(buffer, "\n") == 0) {
-        fin = 1;
-      }
-    }
 
     if (headerError == 400) {
       fprintf(file, "%s", error_400);
