@@ -11,10 +11,10 @@
 #include <errno.h>
 #include "socket.h"
 
-const char *welcome_message = "Welcome on Apache 3 !!! Le serveur du futur !\n Il a ete entierement realiser suite a des \netudes francaise que j'ai realise moi-meme car je sui \nfrancais, prenant en compte l'influence d'apache dans le \nmonde des devellopeurs de l'IUT de Lille A au seins de la \npromo Promo N4P2. Ce serveur est concus par les meilleurs \netudiants de la promotion, a savoir : Paul-Ivan Affolaby, \nexpert monetaire doue d'un esprit de chef d'equipe, Kevin \nMessien, technicien de pointe capable de realiser des chmod \nincongru (notemment pour se retirer ses propres droits de \nfacon recursif), son genie reste inegale, et enfin Florian \nMardon, futur ingenieur expert en lardon et en pate-raclette";
+const char *welcome_message = "Welcome on Apache 3 !!! Le serveur du futur !\r\n Il a ete entierement realiser suite a des \r\netudes francaise que j'ai realise moi-meme car je sui \r\nfrancais, prenant en compte l'influence d'apache dans le \r\nmonde des devellopeurs de l'IUT de Lille A au seins de la \r\npromo Promo N4P2. Ce serveur est concus par les meilleurs \r\netudiants de la promotion, a savoir : Paul-Ivan Affolaby, \r\nexpert monetaire doue d'un esprit de chef d'equipe, Kevin \r\nMessien, technicien de pointe capable de realiser des chmod \r\nincongru (notemment pour se retirer ses propres droits de \r\nfacon recursif), son genie reste inegale, et enfin Florian \r\nMardon, futur ingenieur expert en lardon et en pate-raclette\r\n";
 const char *apache3 = "<Apache3>";
-const char *error_400 = "HTTP/1.1 400 Bad Request\r\nConnection: close\r\nContent-Length: 17\r\n\r\n400 Bad request";
-const char *error_404 = "HTTP/1.1 404 Not Found\r\nConnection: close\r\nContent-Length: 13\r\n\r\n404 Not Found";
+const char *error_400 = "HTTP/1.1 400 Bad Request\r\nConnection: close\r\nContent-Length: 19\r\n\r\n400 Bad request\r\n";
+const char *error_404 = "HTTP/1.1 404 Not Found\r\nConnection: close\r\nContent-Length: 15\r\n\r\n404 Not Found\r\n";
 const char *message_200 = "HTTP/1.1 200 Ok\r\n";
 const char *message_size = "Content-Length: ";
 
