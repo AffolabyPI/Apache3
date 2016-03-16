@@ -202,6 +202,14 @@ int accept_client(int server_socket) {
   return 0;
 }
 
+const char * get_mime(const char * ext){
+	for (int i=0; tm[i].ext!=NULL;++i){
+		if (strcmp(tm[i].ext,ext)==0){
+			return tm[i].mime;
+		}
+	}
+}
+
 void close_client(int client_socket) {
   close(client_socket);
 }
