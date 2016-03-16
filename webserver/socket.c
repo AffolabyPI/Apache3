@@ -12,7 +12,7 @@
 #include "socket.h"
 
 const char *welcome_message = "<Apache3> Welcome on Apache 3 !!! Le serveur du futur !\r\n Il a ete entierement realiser suite a des \r\netudes francaise que j'ai realise moi-meme car je sui \r\nfrancais, prenant en compte l'influence d'apache dans le \r\nmonde des devellopeurs de l'IUT de Lille A au seins de la \r\npromo Promo N4P2. Ce serveur est concus par les meilleurs \r\netudiants de la promotion, a savoir : Paul-Ivan Affolaby, \r\nexpert monetaire doue d'un esprit de chef d'equipe, Kevin \r\nMessien, technicien de pointe capable de realiser des chmod \r\nincongru (notemment pour se retirer ses propres droits de \r\nfacon recursif), son genie reste inegale, et enfin Florian \r\nMardon, futur ingenieur expert en lardon et en pate-raclette\r\n";
-const char *http_version = "HTTP-1.1";
+const char *http_version = "HTTP/1.1";
 const char *content_length = "Content-Length:";
 void deal_signal(int sig){
   printf("Signal %d recu\n", sig);
@@ -119,7 +119,7 @@ void send_status(FILE *client, int code, const char *reason_phrase) {
 
 void send_response(FILE *client, int code, const char *reason_phrase, const char *message_body){
   send_status(client, code, reason_phrase);
-  fprintf(client, "%s %d\r\n\r\n%s", content_length, (int) (strlen(message_body) + 1), message_body);
+  fprintf(client, "%s %d\r\n\r\n%s", content_length, (int) (strlen(message_body)), message_body);
 }
 
 char *rewrite_url(char *url){
@@ -142,16 +142,20 @@ int check_client_header(FILE *file) {
   fgets_or_exit(buffer, 1024, file);
 
   if (parse_http_request(buffer, &request) == 1) {
+    char *url = rewrite_url(request.url);
     if (request.method != HTTP_GET) {
       skip_headers(file);
       send_response(file, 400, "Bad request", "Bad request\r\n");
+      free(url);
       return 400;
-    } else if (strcmp(rewrite_url(request.url), "/")) {
+    } else if (strcmp(url, "/")) {
       skip_headers(file);
       send_response(file, 404, "Not Found", "Not Found\r\n");
+      free(url);
       return 404;
     } else {
       skip_headers(file);
+      free(url);
       return 200;
     }
   } else {
