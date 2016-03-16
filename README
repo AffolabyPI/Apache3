@@ -6,6 +6,7 @@ Début du projet, explication du fonctionnement détaillé d'un git, mise en place 
 
 Details du GIT:
 *Ajouts
++Modification
 
 Apache3
 	  \-*AUTHORS.txt
@@ -20,10 +21,6 @@ Seance 1 - 03/02/2016
 *********************
 
 Ajout des protocoles d'échange avec le serveur par TCP et début d'amélioration des sockets
-
-Details du GIT
-*Ajouts
-+Modification
 
 Apache3
 	  \*webserveur
@@ -50,17 +47,13 @@ Seance 2 - 10/02/2016
 
 Réparation des problèmes de serveur du tp précédent et orientation de ce dernier vers un usage web.
 
-Details du GIT
-*Ajouts
-+Modification
-
 Apache3
 	  \webserveur
 	  |		  \-apche3.exe
-	  |	       	   -main.c
+	  |	       -main.c
 	  |		   -main.o
 	  |		   -Makefile
-	  |   	   	   -makefile.dep
+	  |   	   -makefile.dep
 	  |		   +-socket.c
 	  |		   -socket.h
 	  |		   -socket.o
@@ -81,10 +74,10 @@ Implementation de quelques messages de rediriction et lecture des lignes envoyés
 Apache3
 	  \webserveur
 	  |		  \-apche3.exe
-	  |	       	   -main.c
+	  |	       -main.c
 	  |		   -main.o
 	  |		   -Makefile
-	  |   	   	   -makefile.dep
+	  |   	   -makefile.dep
 	  |		   +-socket.c
 	  |		   -socket.h
 	  |		   -socket.o
@@ -105,10 +98,10 @@ Travail sur le parse_HTTP_request.
 Apache3
 	  \webserveur
 	  |		  \-apche3.exe
-	  |	       	   -main.c
+	  |	       -main.c
 	  |		   -main.o
 	  |		   -Makefile
-	  |   	   	   -makefile.dep
+	  |   	   -makefile.dep
 	  |		   +-socket.c
 	  |		   -socket.h
 	  |		   -socket.o
@@ -117,5 +110,33 @@ Apache3
 	  -LICENSE.txt
 	  +-README.txt
 	  -Makefile
+
+*********************
+
+Seance 5 - 09/03/2016
+
+*********************
+
+Travail sur les send_response des différents messages d'erreur.
+
+Apache3
+	  \webserveur
+	  |		  \-apche3.exe
+	  |	       -main.c
+	  |		   -main.o
+	  |		   -Makefile
+	  |   	   -makefile.dep
+	  |		   +-socket.c
+	  |		   +-socket.h
+	  |		   -socket.o
+	  |		   -utilitaire
+	  -AUTHORS.txt
+	  -LICENSE.txt
+	  +-README.txt
+	  -Makefile
+
+*********************
+
+Seance 6 - 16/03/2016
 
 *********************
