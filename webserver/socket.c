@@ -122,6 +122,19 @@ void send_response(FILE *client, int code, const char *reason_phrase, const char
   fprintf(client, "%s %d\r\n\r\n%s", content_length, (int) (strlen(message_body) + 1), message_body);
 }
 
+char *rewrite_url(char *url){
+  char *c = url;
+  char *retour = (char *) malloc(sizeof(char)*strlen(url));
+  char *w = retour;
+  while(*c != '?' && *c != '\0'){
+    *w = *c;
+    c++;
+    w++;
+  }
+  *w = '\0';
+  return retour;
+}
+
 int check_client_header(FILE *file) {
   char buffer[1024];
   http_request request;
@@ -133,7 +146,7 @@ int check_client_header(FILE *file) {
       skip_headers(file);
       send_response(file, 400, "Bad request", "Bad request\r\n");
       return 400;
-    } else if (strcmp(request.url, "/")) {
+    } else if (strcmp(rewrite_url(request.url), "/")) {
       skip_headers(file);
       send_response(file, 404, "Not Found", "Not Found\r\n");
       return 404;
