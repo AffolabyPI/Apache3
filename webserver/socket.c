@@ -9,6 +9,7 @@
 #include <unistd.h>
 #include <signal.h>
 #include <errno.h>
+#include <fcntl.h>
 #include "socket.h"
 
 const char *welcome_message = "<Apache3> Welcome on Apache 3 !!! Le serveur du futur !\r\n Il a ete entierement realiser suite a des \r\netudes francaise que j'ai realise moi-meme car je sui \r\nfrancais, prenant en compte l'influence d'apache dans le \r\nmonde des devellopeurs de l'IUT de Lille A au seins de la \r\npromo Promo N4P2. Ce serveur est concus par les meilleurs \r\netudiants de la promotion, a savoir : Paul-Ivan Affolaby, \r\nexpert monetaire doue d'un esprit de chef d'equipe, Kevin \r\nMessien, technicien de pointe capable de realiser des chmod \r\nincongru (notemment pour se retirer ses propres droits de \r\nfacon recursif), son genie reste inegale, et enfin Florian \r\nMardon, futur ingenieur expert en lardon et en pate-raclette\r\n";
@@ -133,6 +134,13 @@ char *rewrite_url(char *url){
   }
   *w = '\0';
   return retour;
+}
+
+int check_or_open(const char *url, const char *document_root){
+  char buffer[256];
+  sprintf(buffer, "%s%s", document_root, url);
+  int exist = open(buffer, O_RDONLY);
+  return exist;
 }
 
 int check_client_header(FILE *file) {
