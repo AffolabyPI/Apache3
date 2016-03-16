@@ -11,12 +11,7 @@
 #include <errno.h>
 #include "socket.h"
 
-const char *welcome_message = "Welcome on Apache 3 !!! Le serveur du futur !\r\n Il a ete entierement realiser suite a des \r\netudes francaise que j'ai realise moi-meme car je sui \r\nfrancais, prenant en compte l'influence d'apache dans le \r\nmonde des devellopeurs de l'IUT de Lille A au seins de la \r\npromo Promo N4P2. Ce serveur est concus par les meilleurs \r\netudiants de la promotion, a savoir : Paul-Ivan Affolaby, \r\nexpert monetaire doue d'un esprit de chef d'equipe, Kevin \r\nMessien, technicien de pointe capable de realiser des chmod \r\nincongru (notemment pour se retirer ses propres droits de \r\nfacon recursif), son genie reste inegale, et enfin Florian \r\nMardon, futur ingenieur expert en lardon et en pate-raclette\r\n";
-const char *apache3 = "<Apache3>";
-const char *error_400 = "HTTP/1.1 400 Bad Request\r\nConnection: close\r\nContent-Length: 19\r\n\r\n400 Bad request\r\n";
-const char *error_404 = "HTTP/1.1 404 Not Found\r\nConnection: close\r\nContent-Length: 15\r\n\r\n404 Not Found\r\n";
-const char *message_200 = "HTTP/1.1 200 Ok\r\n";
-const char *message_size = "Content-Length: ";
+const char *welcome_message = "<Apache3> Welcome on Apache 3 !!! Le serveur du futur !\r\n Il a ete entierement realiser suite a des \r\netudes francaise que j'ai realise moi-meme car je sui \r\nfrancais, prenant en compte l'influence d'apache dans le \r\nmonde des devellopeurs de l'IUT de Lille A au seins de la \r\npromo Promo N4P2. Ce serveur est concus par les meilleurs \r\netudiants de la promotion, a savoir : Paul-Ivan Affolaby, \r\nexpert monetaire doue d'un esprit de chef d'equipe, Kevin \r\nMessien, technicien de pointe capable de realiser des chmod \r\nincongru (notemment pour se retirer ses propres droits de \r\nfacon recursif), son genie reste inegale, et enfin Florian \r\nMardon, futur ingenieur expert en lardon et en pate-raclette\r\n";
 const char *http_version = "HTTP-1.1";
 const char *content_length = "Content-Length:";
 void deal_signal(int sig){
@@ -118,20 +113,13 @@ void skip_headers(FILE *file){
   }
 }
 
-void send_status (FILE *client, int code, const char *reason_phrase){
-   char buf[128];
-
-  sprintf(buf, "%d %s\r\n", code, reason_phrase);
-  fprintf(client, "%s %d %s\r\nConnection: close\r\n%s %d\r\n\r\n%s", http_version, code, reason_phrase, content_length, (int) (strlen(buf) + 1), buf);
+void send_status(FILE *client, int code, const char *reason_phrase) {
+  fprintf(client, "%s %d %s\r\nConnection: close\r\n", http_version, code, reason_phrase);
 }
 
 void send_response(FILE *client, int code, const char *reason_phrase, const char *message_body){
-  if(code == 400)
-    send_status(client, 400, reason_phrase);
-  else if(code == 404)
-    send_status(client, 404, reason_phrase);
-  else
-    send_status(client, 400, reason_phrase);
+  send_status(client, code, reason_phrase);
+  fprintf(client, "%s %d\r\n\r\n%s", content_length, (int) (strlen(message_body) + 1), message_body);
 }
 
 int check_client_header(FILE *file) {
@@ -144,22 +132,18 @@ int check_client_header(FILE *file) {
     if (request.method != HTTP_GET) {
       skip_headers(file);
       send_response(file, 400, "Bad request", "Bad request\r\n");
-      //send_status(file, 400, "Bad request");
       return 400;
     } else if (strcmp(request.url, "/")) {
       skip_headers(file);
       send_response(file, 404, "Not Found", "Not Found\r\n");
-      //send_status(file, 404, "Not Found");
       return 404;
     } else {
       skip_headers(file);
-      //send_status(file, 200, "Ok");
       return 200;
     }
   } else {
     skip_headers(file);
-    send_response(file, 400, "Bad Request", "Bad request\r\n")
-    //send_status(file, 400, "Bad Request");
+    send_response(file, 400, "Bad Request", "Bad request\r\n");
     return 400;
   }
 }
@@ -180,7 +164,7 @@ int accept_client(int server_socket) {
     headerError = check_client_header(file);
 
     if (headerError == 200) {
-      fprintf(file, "%s%s%d\r\n\r\n%s %s", message_200, message_size, (int) (strlen(apache3) + strlen(welcome_message) + 1), apache3, welcome_message);
+      send_response(file, 200, "Ok", welcome_message);
     }
 
     fflush(file);   
